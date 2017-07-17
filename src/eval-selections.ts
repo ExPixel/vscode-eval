@@ -99,7 +99,11 @@ export function evalSelections(editor: TextEditor, selections: Range[]) : Thenab
             let replacement = context[replacementVars[idx]];
 
             if (replacement !== undefined) {
-                editorEdit.replace(selections[idx], '' + replacement);
+                if (typeof replacement === 'object') {
+                    editorEdit.replace(selections[idx], '' + JSON.stringify(replacement));
+                } else {
+                    editorEdit.replace(selections[idx], '' + replacement);
+                }
             }
         }
     });
