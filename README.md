@@ -6,6 +6,8 @@ Evaluate multiple selections as javascript expressions and replace them with the
 
 * Evaluates javascript expressions.
 * All functions and objects provided by the Math object are globals in eval.
+* Use `$prev` to use the value of the previously evaluated expression.
+* Use `$s{n}` to use the value of the the __previously__ evaluated expression #`n` (0-based)
 * Extra Functions
     * `hex(number, padTo = 0, padChar = 0)` -- Convert number to hexadecimal.
     * `bin(number, padTo = 0, padChar = 0)` -- Convert number to binary.
