@@ -52,6 +52,34 @@ function getFirstStackError(stack: string) : ErrorLine | null {
     return null;
 }
 
+function countOccurrences(text: string, needle: string): number {
+    if (text.length < 1 || needle.length < 1) return 0;
+
+    let count = -1, pos = 0;
+    do {
+        count++;
+        pos = text.indexOf(needle, pos) + 1;
+    } while(pos > 0);
+    return count;
+}
+
+export interface LineMapping {
+    /**
+     * The offset of the line in the current source.
+     */
+    offset: number,
+
+    /**
+     * The number of lines to map.
+     */
+    count: number,
+
+    /**
+     * The offset of the line in the original source.
+     */
+    orignalOffset: number
+}
+
 export function evalSelections(editor: TextEditor, selections: Range[]) : Thenable<boolean> {
     let source = '';
     const context = Object.assign({
@@ -59,9 +87,10 @@ export function evalSelections(editor: TextEditor, selections: Range[]) : Thenab
     }, evalDefaults);
 
     const replacementVars = new Array(selections.length);
-    const lineMap = new Array(selections.length);
+    const lineMap = new Array<LineMapping>();
 
-    for (let idx = 0; idx < selections.length; idx++) {
+    
+    for (let idx = 0, line = 0; idx < selections.length; idx++) {
         const sel = selections[idx];
         const vname = '$s' + idx;
         const selectionSource = editor.document.getText(sel);
@@ -70,7 +99,14 @@ export function evalSelections(editor: TextEditor, selections: Range[]) : Thenab
             source += `${vname} = (${selectionSource}); $prev = ${vname};\n`;
         }
         replacementVars[idx] = vname;
-        lineMap[idx + 1] = sel.start.line;
+        
+        const lineCount = countOccurrences(selectionSource, '\n') + 1;
+        lineMap.push({
+            offset: line + 1, // make it 1-indexed
+            count: lineCount,
+            orignalOffset: sel.start.line
+        });
+        line += lineCount;
     };
 
     vm.createContext(context);
@@ -87,8 +123,23 @@ export function evalSelections(editor: TextEditor, selections: Range[]) : Thenab
 
         if (errorLoc) {
             let {filename, line} = errorLoc;
-            if (filename === editor.document.fileName) { line = lineMap[line]; }
-            window.showErrorMessage(`[Eval Error | ${filename}:${line + 1}] ${message}`);
+
+            // getting the original lines.
+            if (filename === editor.document.fileName) {
+                let mapped = false;
+                for(let mapping of lineMap) {
+                    if (line >= mapping.offset && line < mapping.offset + mapping.count) {
+                        line = line - mapping.offset + mapping.orignalOffset;
+                        mapped = true;
+                    }
+                }
+
+                if (mapped) {
+                    window.showErrorMessage(`[Eval Error | ${filename}:${line + 1}] ${message}`);
+                } else {
+                    window.showErrorMessage(`[Eval Error | ${filename}:???] ${message}`);
+                }
+            }
         } else {
             window.showErrorMessage(`[Eval Error | ${editor.document.fileName}] ${message}`);
         }
