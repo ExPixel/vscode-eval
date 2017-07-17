@@ -4,6 +4,11 @@
     "description": "Evaluates selected regions.",
     "version": "1.0.0",
     "publisher": "expixel",
+    "icon": "images/calculator-icon.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ExPixel/vscode-eval.git"
+    },
     "engines": {
         "vscode": "^1.14.0"
     },

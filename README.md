@@ -12,7 +12,7 @@ Evaluate multiple selections as javascript expressions and replace them with the
     * `oct(number, padTo = 0, padChar = 0)` -- Convert number to octal.
     * `itoa(number, radix, padTo = 0, padChar = 0)` -- Convert a number from one radix to another.
 
-![Eval Usage](screenshots/eval-video-demo-gif.gif)
+![Eval Usage](images/eval-video-demo-gif.gif)
 
 ## Extension Settings
 
@@ -25,3 +25,6 @@ This extension contributes the following settings:
 ### 1.0.0
 
 Initial release of Eval
+
+## Other
+* Icon is by [BlackVariant](http://blackvariant.deviantart.com/)
