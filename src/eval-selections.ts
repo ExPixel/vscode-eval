@@ -17,7 +17,7 @@ const errorLocRegexFunction = /at\s+([^\s]+)\s+\(([^:]+):(\d+):(\d+)\)/;
 function getErrorLineInfo(stackLine: string) : ErrorLine | null {
     if (stackLine.indexOf('(') >= 0) {
         errorLocRegexFunction.lastIndex = 0;
-        const matches = errorLocRegexFile.exec(stackLine);
+        const matches = errorLocRegexFunction.exec(stackLine);
         if (matches) {
             return {
                 fn: matches[1],
@@ -46,7 +46,7 @@ function getFirstStackError(stack: string) : ErrorLine | null {
     if (firstErrorLineStart >= 0) {
         let firstErrorLineEnd = stack.indexOf('\n', firstErrorLineStart + 1);
         if (firstErrorLineEnd < 0) { firstErrorLineEnd = stack.length; }
-        const firstErrorLine = stack.substr(firstErrorLineStart + 1, firstErrorLineEnd);
+        const firstErrorLine = stack.substring(firstErrorLineStart + 1, firstErrorLineEnd);
         return getErrorLineInfo(firstErrorLine);
     }
     return null;
@@ -114,7 +114,7 @@ export function evalSelections(editor: TextEditor, selections: Range[]) : Thenab
     try {
         vm.runInContext(source, context, {
             filename: editor.document.fileName,
-            displayErrors: true,
+            displayErrors: false,
             timeout: 1000
         });
     } catch(e) {
@@ -139,6 +139,8 @@ export function evalSelections(editor: TextEditor, selections: Range[]) : Thenab
                 } else {
                     window.showErrorMessage(`[Eval Error | ${filename}:???] ${message}`);
                 }
+            } else {
+                window.showErrorMessage(`[Eval Error | ${editor.document.fileName}] ${message}`);
             }
         } else {
             window.showErrorMessage(`[Eval Error | ${editor.document.fileName}] ${message}`);
