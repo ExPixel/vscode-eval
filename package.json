@@ -2,7 +2,7 @@
     "name": "vscode-eval",
     "displayName": "VSCode Eval",
     "description": "Evaluates selected regions.",
-    "version": "1.0.0",
+    "version": "1.1.1",
     "publisher": "expixel",
     "icon": "images/calculator-icon.png",
     "repository": {
@@ -31,7 +31,6 @@
                 }
             }
         },
-
         "commands": [
             {
                 "command": "eval.evalSelections",
@@ -39,7 +38,6 @@
                 "when": "editorHasSelection && !editorReadOnly"
             }
         ],
-
         "keybindings": [
             {
                 "command": "eval.evalSelections",
