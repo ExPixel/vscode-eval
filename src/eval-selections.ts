@@ -88,9 +88,9 @@ export function evalSelections(editor: TextEditor, selections: Range[]) : Thenab
         if (errorLoc) {
             let {filename, line} = errorLoc;
             if (filename === editor.document.fileName) { line = lineMap[line]; }
-            window.showErrorMessage(`[Eval Error] [${filename}:${line}] ${message}`);
+            window.showErrorMessage(`[Eval Error | ${filename}:${line + 1}] ${message}`);
         } else {
-            window.showErrorMessage(`[Eval Error] [${editor.document.fileName}] ${message}`);
+            window.showErrorMessage(`[Eval Error | ${editor.document.fileName}] ${message}`);
         }
     }
 
