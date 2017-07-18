@@ -81,24 +81,20 @@ export interface LineMapping {
 }
 
 export function evalSelections(editor: TextEditor, selections: Range[]) : Thenable<boolean> {
-    let source = '';
     const context = Object.assign({
-        '$prev': ''
+        '$results': new Array(selections.length)
     }, evalDefaults);
+    
+    let fsource = '';
 
-    const replacementVars = new Array(selections.length);
     const lineMap = new Array<LineMapping>();
-
     
     for (let idx = 0, line = 0; idx < selections.length; idx++) {
         const sel = selections[idx];
-        const vname = '$s' + idx;
         const selectionSource = editor.document.getText(sel);
-        context[vname] = undefined;
         if (selectionSource.trim().length > 0) {
-            source += `${vname} = (${selectionSource}); $prev = ${vname};\n`;
+            fsource += `$prev = $localResults[${idx}] = (${selectionSource});\n`;
         }
-        replacementVars[idx] = vname;
         
         const lineCount = countOccurrences(selectionSource, '\n') + 1;
         lineMap.push({
@@ -108,6 +104,8 @@ export function evalSelections(editor: TextEditor, selections: Range[]) : Thenab
         });
         line += lineCount;
     };
+
+    const source = `$results = (() => { const $localResults = []; let $prev = ''; ${fsource}; return $localResults; })();`;
 
     vm.createContext(context);
 
@@ -121,36 +119,28 @@ export function evalSelections(editor: TextEditor, selections: Range[]) : Thenab
         const message = e['message'] || 'Unknown error.';
         const errorLoc = typeof e['stack'] === 'string' ? getFirstStackError(e['stack']) : null;
 
-        if (errorLoc) {
-            let {filename, line} = errorLoc;
+        let locationFile = editor.document.fileName, locationLine = -1;
 
-            // getting the original lines.
+        if (errorLoc) {
+            const {filename, line} = errorLoc;
             if (filename === editor.document.fileName) {
-                let mapped = false;
+                locationFile = filename;
                 for(let mapping of lineMap) {
                     if (line >= mapping.offset && line < mapping.offset + mapping.count) {
-                        line = line - mapping.offset + mapping.orignalOffset;
-                        mapped = true;
+                        locationLine = line - mapping.offset + mapping.orignalOffset + 1;
+                        break;
                     }
                 }
-
-                if (mapped) {
-                    window.showErrorMessage(`[Eval Error | ${filename}:${line + 1}] ${message}`);
-                } else {
-                    window.showErrorMessage(`[Eval Error | ${filename}:???] ${message}`);
-                }
-            } else {
-                window.showErrorMessage(`[Eval Error | ${editor.document.fileName}] ${message}`);
             }
-        } else {
-            window.showErrorMessage(`[Eval Error | ${editor.document.fileName}] ${message}`);
         }
+
+        window.showErrorMessage(`[Eval Error | ${locationFile}${locationLine == -1 ? '' : ':' + locationLine}] ${message}`);
     }
 
+    const results = context['$results'];
     return editor.edit((editorEdit) => {
         for (let idx = 0; idx < selections.length; idx++) {
-            let replacement = context[replacementVars[idx]];
-
+            const replacement = results[idx];
             if (replacement !== undefined) {
                 if (typeof replacement === 'object') {
                     editorEdit.replace(selections[idx], '' + JSON.stringify(replacement));
