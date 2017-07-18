@@ -28,5 +28,9 @@ This extension contributes the following settings:
 
 Initial release of Eval
 
+### 1.2.0
+
+Changed the way that selections are evaluated and other minor changes.
+
 ## Other
 * Icon is by [BlackVariant](http://blackvariant.deviantart.com/)
