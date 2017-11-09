@@ -12,7 +12,7 @@ Evaluate multiple selections as javascript expressions and replace them with the
     * `hex(number, padTo = 0, padChar = 0)` -- Convert number to hexadecimal.
     * `bin(number, padTo = 0, padChar = 0)` -- Convert number to binary.
     * `oct(number, padTo = 0, padChar = 0)` -- Convert number to octal.
-    * `itoa(number, radix, padTo = 0, padChar = 0)` -- Convert a number from one radix to another.
+    * `itoa(number, radix, padTo = 0, padChar = 0)` -- Convert a decimal number to another radix.
 
 ![Eval Usage](images/eval-video-demo-gif.gif)
 
