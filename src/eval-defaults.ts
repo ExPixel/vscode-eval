@@ -16,12 +16,17 @@ function itoa(n: number, radix: number, padTo: number = 0, padChar: string | num
     return str;
 };
 
+// Hexadecimal to Decimal
 function hex2dec(s: string | number) {
     return parseInt(s.toString(), 16);
 };
+
+// Binary to Decimal
 function bin2dec(n: number) {
     return parseInt(n.toString(), 2);
 };
+
+// Octal to Decimal
 function oct2dec(n: number) {
     return parseInt(n.toString(), 8);
 };
