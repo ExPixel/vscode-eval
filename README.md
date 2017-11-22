@@ -1,4 +1,5 @@
 # vscode-eval README
+[![Build Status](https://travis-ci.org/ExPixel/vscode-eval.svg?branch=master)](https://travis-ci.org/ExPixel/vscode-eval)
 
 Evaluate multiple selections as javascript expressions and replace them with their values.
 
